@@ -89,6 +89,12 @@ class _PlanManagerScreenState extends State<PlanManagerScreen> {
     });
   }
 
+  void removePlan(int index) {
+    setState(() {
+      plans.removeAt(index);
+    });
+  }
+
   void openCreatePlanModal() {
     showDialog(
       context: context,
@@ -149,18 +155,32 @@ class _PlanManagerScreenState extends State<PlanManagerScreen> {
               itemCount: plans.length,
               itemBuilder: (context, index) {
                 final plan = plans[index];
-                return ListTile(
-                  title: Text(plan.name),
-                  subtitle: Text(plan.description),
-                  trailing: Text(
-                    "${plan.date.month}/${plan.date.day}/${plan.date.year}",
+                return GestureDetector(
+                  onLongPress: () => openEditPlanModal(index),
+                  onDoubleTap: () => removePlan(index),
+                  child: Dismissible(
+                    key: UniqueKey(),
+                    onDismissed: (_) => markAsCompleted(index),
+                    child: ListTile(
+                      title: Text(
+                        plan.name,
+                        style: TextStyle(
+                          color: plan.isCompleted ? Colors.green : Colors.black,
+                        ),
+                      ),
+                      subtitle: Text(plan.description),
+                      trailing: Text(
+                        "${plan.date.month}/${plan.date.day}/${plan.date.year}",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
                   ),
                 );
               },
             ),
           ),
           ElevatedButton(
-            onPressed: () {}, // Placeholder for "Create Plan" button
+            onPressed: openCreatePlanModal,
             child: Text("Create Plan"),
           ),
         ],
